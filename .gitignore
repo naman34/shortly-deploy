@@ -25,6 +25,7 @@ lib-cov
 pids
 logs
 results
+db/shortly.sqlite
 
 npm-debug.log
 node_modules
