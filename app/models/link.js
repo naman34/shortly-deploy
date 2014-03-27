@@ -4,9 +4,9 @@ var Promise = require('bluebird');
 var crypto = require('crypto');
 
 var linkSchema = mongoose.Schema({
-  url: { type: [String], index: true },
+  url: { type: String, index: true },
   base_url: String,
-  code: { type: [String], index: true },
+  code: { type: String, index: true },
   title: String,
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }

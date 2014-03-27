@@ -7,7 +7,7 @@ var bcrypt = require('bcrypt-nodejs');
 bcrypt = Promise.promisifyAll(bcrypt);
 
 var userSchema = new Schema({
-  username: { type: [String], index: true },
+  username: { type: String, index: true },
   password: String,
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
@@ -18,6 +18,7 @@ userSchema.pre('save', function (done) {
   bcrypt.hashAsync(this.password, null, null).bind(this)
     .then(function(hash){
       this.password = hash;
+      console.log(this);
     })
     .then(done);
 }, { autoIndex: false });

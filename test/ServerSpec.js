@@ -3,15 +3,15 @@ var express = require('express');
 var expect = require('chai').expect;
 var app = require('../server-config.js');
 
-var db = require('../app/config');
-var User = require('../app/models/user');
-var Link = require('../app/models/link');
+//var db = require('../app/config');
+var User = require('../app/models/user').User;
+var Link = require('../app/models/link').Link;
 
 /////////////////////////////////////////////////////
 // NOTE: these tests are designed for mongo!
 /////////////////////////////////////////////////////
 
-xdescribe('', function() {
+describe('', function() {
 
   beforeEach(function(done) {
     // Log out currently signed in user
@@ -89,14 +89,14 @@ xdescribe('', function() {
     }); // 'Shortening Links'
 
     describe('With previously saved urls: ', function() {
-
+      var link;
       beforeEach(function(done) {
         link = new Link({
           url: 'http://www.roflzoo.com/',
           title: 'Rofl Zoo - Daily funny animal pictures',
           base_url: 'http://127.0.0.1:4568',
           visits: 0
-        })
+        });
 
         link.save(function() {
           done();
