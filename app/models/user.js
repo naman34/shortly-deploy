@@ -1,6 +1,5 @@
 
-require('./mongo_config')
-var mongoose = require('mongoose');
+var mongoose = require('./mongo_config').mongoose;//require('mongoose');
 var Schema = mongoose.Schema;
 var Promise = require('bluebird');
 var bcrypt = require('bcrypt-nodejs');
@@ -9,10 +8,13 @@ bcrypt = Promise.promisifyAll(bcrypt);
 
 var userSchema = new Schema({
   username: { type: [String], index: true },
-  password: String
+  password: String,
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
 });
 
 userSchema.pre('save', function (done) {
+  this.updatedAt = Date.now();
   bcrypt.hashAsync(this.password, null, null).bind(this)
     .then(function(hash){
       this.password = hash;
@@ -24,11 +26,16 @@ userSchema.statics.findByUsernamePassword = function (obj, cb) {
   this.findOne({ username: obj.username }, function(err, user){
     if(!!err){
       cb(err);
+    } else if(!user) {
+      cb('no users found');
     } else {
       bcrypt.compareAsync(obj.password, user.password)
         .then(function(match){
           if(match){
-            cb(null, user);
+            cb(null, {
+              _id: user._id,
+              username: (Array.isArray(user.username)) ? user.username[0] : user.username
+            });
           } else {
             cb(null, null);
           }
@@ -37,21 +44,20 @@ userSchema.statics.findByUsernamePassword = function (obj, cb) {
   });
 };
 
-var User;
+//var User;
 
-exports.User =  User = mongoose.model('Users', userSchema);
+exports.User = mongoose.model('Users', userSchema);
 
 //setTimeout(function(){
-  // var newUser = new User({ username: 'a', password: 'a'});
-  User.create({username:'a', password: 'a'}, function(err, res){
-    console.log("SAVING>>>", err, res);
-  });
+  // User.create({username:'c', password: 'c'}, function(err, res){
+  //   console.log("SAVING>>>", err, res);
+  // });
 
-  User.find({}, function(err, res){
-      console.log("FINDING>>>", err, res);
-    })
-  console.log("something...");
-  //}, 2000);
+  // exports.User.findByUsernamePassword({username:'c', password: 'c'}, function(err, res){
+  //     console.log("FINDING>>>", err, res);
+  //   })
+  // console.log("something...");
+  // }, 2000);
 
 // var db = require('../config');
 // var bcrypt = require('bcrypt-nodejs');
