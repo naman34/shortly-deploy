@@ -136,7 +136,7 @@ xdescribe('', function() {
   describe('Priviledged Access:', function(){
 
     // /*  Authentication  */
-    // // TODO: xit out authentication
+    // // : xit out authentication
     it('Redirects to login page if a user tries to access the main page and is not signed in', function(done) {
       request(app)
         .get('/')

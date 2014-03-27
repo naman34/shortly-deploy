@@ -3,6 +3,26 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     concat: {
+      options: {
+        separator: ';'
+      },
+      dist: {
+        src: [
+              './public/lib/jquery.js',
+              './public/lib/handlebars.js',
+              './public/lib/underscore.js',
+              './public/lib/backbone.js',
+              './public/client/templates.js',
+              './public/client/app.js',
+              './public/client/link.js',
+              './public/client/links.js',
+              './public/client/linkView.js',
+              './public/client/linksView.js',
+              './public/client/createlinkView.js',
+              './public/client/router.js'
+            ],
+        dest: './public/dist/built.js'
+      }
     },
 
     mochaTest: {
@@ -21,11 +41,19 @@ module.exports = function(grunt) {
     },
 
     uglify: {
+      uglify: {
+        options: {
+          sourceMap: false
+        },
+        files: {
+          './public/dist/built.js':'./public/dist/built.js'
+        }
+      }
     },
 
     jshint: {
       files: [
-        // Add filespec list here
+        "app/**/*.js", "lib/**/*.js", "*.js", "public/client/*.js"
       ],
       options: {
         force: 'true',
@@ -38,15 +66,24 @@ module.exports = function(grunt) {
     },
 
     cssmin: {
+      minify: {
+        expand: true,
+        cwd: 'public/',
+        src: 'style.css',
+        dest: 'public/dist/',
+        ext: '.min.css'
+      }
     },
 
     watch: {
       scripts: {
         files: [
           'public/client/**/*.js',
-          'public/lib/**/*.js',
+          'public/lib/**/*.js'
         ],
         tasks: [
+          'jshint',
+          'mochaTest',
           'concat',
           'uglify'
         ]
@@ -60,7 +97,7 @@ module.exports = function(grunt) {
     shell: {
       prodServer: {
       }
-    },
+    }
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -72,6 +109,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-nodemon');
 
+  grunt.registerTask('build', [
+    'jshint','mochaTest','concat','cssmin', 'uglify', 'watch'
+  ]);
+
   grunt.registerTask('server-dev', function (target) {
     // Running nodejs in a different process and displaying output on the main console
     var nodemon = grunt.util.spawn({
@@ -82,7 +123,7 @@ module.exports = function(grunt) {
     nodemon.stdout.pipe(process.stdout);
     nodemon.stderr.pipe(process.stderr);
 
-    grunt.task.run([ 'watch' ]);
+    grunt.task.run([ 'watch', 'build' ]);
   });
 
   ////////////////////////////////////////////////////
@@ -91,9 +132,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test', [
     'mochaTest'
-  ]);
-
-  grunt.registerTask('build', [
   ]);
 
   grunt.registerTask('upload', function(n) {
